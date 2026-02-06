@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>True Crime Nórdico — Crímenes reales del norte</title>
+<link href="https://fonts.googleapis.com/css2?family=Lacquer&family=Bebas+Neue&family=Inter:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --negro: #0A0A0F;
+    --cyan: #00D4FF;
+    --rojo: #8B0000;
+    --rojo-claro: #A41C1C;
+    --gris: #4A5A6A;
+    --blanco: #E8F4F8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--negro);
+    color: var(--blanco);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  ::selection {
+    background: rgba(139, 0, 0, 0.5);
+    color: var(--blanco);
+  }
+
+  /* ========== GRAIN ========== */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ========== BLOOD CURSOR ========== */
+  .cursor-blade {
+    position: fixed;
+    width: 3px;
+    height: 3px;
+    background: var(--rojo);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 6px rgba(139, 0, 0, 0.8), 0 0 15px rgba(139, 0, 0, 0.4);
+  }
+
+  .blood-drop {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9997;
+    border-radius: 50%;
+    background: radial-gradient(circle, #8B0000 0%, #5a0000 60%, transparent 100%);
+    opacity: 0.8;
+    transform: translate(-50%, -50%);
+    animation: drip 2.5s ease-out forwards;
+  }
+
+  @keyframes drip {
+    0% { opacity: 0.85; transform: translate(-50%, -50%) scale(1); }
+    30% { opacity: 0.6; transform: translate(-50%, calc(-50% + 8px)) scale(1.1, 1.4); }
+    100% { opacity: 0; transform: translate(-50%, calc(-50% + 25px)) scale(0.6, 0.3); }
+  }
+
+  /* ========== HERO ========== */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 2rem;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-logo {
+    max-width: clamp(120px, 20vw, 200px);
+    max-height: clamp(120px, 20vw, 200px);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeIn 1s ease 0.3s forwards;
+    filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.3));
+    object-fit: contain;
+  }
+
+  .hero-logo-placeholder {
+    width: clamp(120px, 20vw, 200px);
+    height: clamp(120px, 20vw, 200px);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeIn 1s ease 0.3s forwards;
+    border: 1px dashed rgba(0, 212, 255, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: rgba(0, 212, 255, 0.35);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .hero-title {
+    font-family: 'Lacquer', cursive;
+    font-size: clamp(3.5rem, 9vw, 8rem);
+    text-transform: uppercase;
+    color: var(--blanco);
+    text-align: center;
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    animation: fadeUp 1.2s ease 0.5s forwards;
+    text-shadow: 0 0 60px rgba(0, 212, 255, 0.1);
+  }
+
+  .hero-subtitle {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-top: 1.5rem;
+    opacity: 0;
+    animation: fadeIn 1s ease 1s forwards;
+  }
+
+  .hero-line {
+    width: 1px;
+    height: 100px;
+    background: linear-gradient(to bottom, var(--rojo), transparent);
+    margin-top: 4rem;
+    opacity: 0;
+    animation: fadeIn 1s ease 1.4s forwards;
+  }
+
+  /* ========== MANIFIESTO ========== */
+  .manifiesto {
+    padding: 6rem 2rem 8rem;
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .manifiesto-text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: clamp(1rem, 1.8vw, 1.2rem);
+    line-height: 1.9;
+    color: rgba(232, 244, 248, 0.5);
+    opacity: 0;
+    transform: translateY(25px);
+    transition: all 1s ease;
+  }
+
+  .manifiesto-text em {
+    font-style: normal;
+    color: var(--blanco);
+    font-weight: 400;
+  }
+
+  /* ========== DIVIDER ========== */
+  .divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+
+  .divider-line { width: 40px; height: 1px; background: var(--gris); opacity: 0.2; }
+  .divider-dot { width: 4px; height: 4px; background: var(--rojo); border-radius: 50%; }
+
+  /* ========== QUOTE ========== */
+  .quote-section {
+    padding: 8rem 2rem;
+    text-align: center;
+    position: relative;
+  }
+
+  .quote-section::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(139, 0, 0, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .quote-text {
+    font-family: 'Lacquer', cursive;
+    font-size: clamp(1.4rem, 3.5vw, 2.4rem);
+    text-transform: uppercase;
+    color: var(--blanco);
+    line-height: 1.25;
+    max-width: 650px;
+    margin: 0 auto;
+    opacity: 0;
+    transform: translateY(25px);
+    transition: all 1s ease;
+  }
+
+  /* ========== CASO 001 ========== */
+  .caso-announce {
+    padding: 6rem 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+  }
+
+  .caso-tag {
+    display: inline-block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rojo-claro);
+    background: rgba(139, 0, 0, 0.15);
+    border: 1px solid rgba(139, 0, 0, 0.3);
+    padding: 0.3rem 1rem;
+    margin-bottom: 2rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease;
+  }
+
+  .caso-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 1rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease 0.1s;
+  }
+
+  .caso-title {
+    font-family: 'Lacquer', cursive;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    text-transform: uppercase;
+    color: var(--blanco);
+    line-height: 1;
+    margin-bottom: 1rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease 0.2s;
+  }
+
+  .caso-meta {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--gris);
+    letter-spacing: 0.1em;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease 0.3s;
+  }
+
+  .caso-desc {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: rgba(232, 244, 248, 0.45);
+    max-width: 450px;
+    margin: 0 auto 3rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease 0.4s;
+  }
+
+  /* ========== NEWSLETTER (custom styled Wild Mail) ========== */
+  .newsletter-wrapper {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease 0.5s;
+  }
+
+  .newsletter-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gris);
+    margin-bottom: 1.2rem;
+  }
+
+  /* Override ALL ActiveCampaign styles */
+  #_form_1_ {
+    font-family: 'Inter', sans-serif !important;
+    background: transparent !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+    border: none !important;
+    color: var(--blanco) !important;
+  }
+
+  #_form_1_ ._form-content {
+    margin-bottom: 0 !important;
+  }
+
+  /* Hide AC title, description, name field, branding */
+  #_form_1_ ._form-title,
+  #_form_1_ ._html-code,
+  #_form_1_ ._x63087749,
+  #_form_1_ ._form-branding {
+    display: none !important;
+  }
+
+  #_form_1_ ._form-label {
+    display: none !important;
+  }
+
+  #_form_1_ ._form_element {
+    margin-bottom: 0 !important;
+  }
+
+  /* Style the email field */
+  #_form_1_ input[type="text"] {
+    background: rgba(74, 90, 106, 0.1) !important;
+    border: 1px solid rgba(74, 90, 106, 0.2) !important;
+    border-right: none !important;
+    border-radius: 0 !important;
+    padding: 0.85rem 1.2rem !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.85rem !important;
+    font-weight: 300 !important;
+    color: var(--blanco) !important;
+    height: auto !important;
+    outline: none !important;
+    transition: border-color 0.3s ease !important;
+    cursor: none !important;
+  }
+
+  #_form_1_ input[type="text"]::placeholder {
+    color: rgba(74, 90, 106, 0.6) !important;
+  }
+
+  #_form_1_ input[type="text"]:focus {
+    border-color: var(--cyan) !important;
+  }
+
+  /* Layout: email + button inline */
+  #_form_1_ ._x11709406 {
+    float: left !important;
+    width: calc(100% - 120px) !important;
+    margin: 0 !important;
+  }
+
+  #_form_1_ ._button-wrapper {
+    float: left !important;
+    width: 120px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #_form_1_ ._submit {
+    font-family: 'Bebas Neue', sans-serif !important;
+    font-size: 0.85rem !important;
+    letter-spacing: 0.15em !important;
+    text-transform: uppercase !important;
+    background: var(--rojo) !important;
+    color: var(--blanco) !important;
+    border: 1px solid var(--rojo) !important;
+    border-radius: 0 !important;
+    padding: 0.85rem 1.5rem !important;
+    width: 100% !important;
+    cursor: none !important;
+    transition: all 0.3s ease !important;
+    height: auto !important;
+    line-height: normal !important;
+  }
+
+  #_form_1_ ._submit:hover {
+    background: var(--rojo-claro) !important;
+    box-shadow: 0 0 25px rgba(139, 0, 0, 0.5) !important;
+  }
+
+  #_form_1_ ._clear-element {
+    clear: both !important;
+  }
+
+  /* Thank you message */
+  #_form_1_ ._form-thank-you {
+    font-family: 'Bebas Neue', sans-serif !important;
+    font-size: 0.85rem !important;
+    letter-spacing: 0.2em !important;
+    text-transform: uppercase !important;
+    color: var(--cyan) !important;
+    padding: 1rem 0 !important;
+  }
+
+  /* Error styles */
+  #_form_1_ ._error-inner {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.75rem !important;
+    background-color: rgba(139, 0, 0, 0.2) !important;
+    color: var(--rojo-claro) !important;
+    border-radius: 0 !important;
+  }
+
+  #_form_1_ input[type="text"]._has_error {
+    border-color: var(--rojo) !important;
+  }
+
+  .newsletter-note {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: rgba(74, 90, 106, 0.4);
+    margin-top: 0.8rem;
+    letter-spacing: 0.05em;
+    clear: both;
+  }
+
+  /* Mobile: stack form */
+  @media (max-width: 600px) {
+    #_form_1_ ._x11709406 {
+      float: none !important;
+      width: 100% !important;
+    }
+    #_form_1_ input[type="text"] {
+      border-right: 1px solid rgba(74, 90, 106, 0.2) !important;
+      border-bottom: none !important;
+    }
+    #_form_1_ ._button-wrapper {
+      float: none !important;
+      width: 100% !important;
+    }
+    body { cursor: auto; }
+    .cursor-blade { display: none; }
+    body *, a, button, input { cursor: auto !important; }
+  }
+
+  /* ========== FOOTER ========== */
+  footer {
+    padding: 6rem 2rem 3rem;
+    text-align: center;
+  }
+
+  .footer-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(74, 90, 106, 0.4);
+  }
+
+  .footer-tagline {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 300;
+    color: rgba(74, 90, 106, 0.25);
+    font-style: italic;
+    margin-top: 0.4rem;
+  }
+
+  /* ========== ANIMATIONS ========== */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(25px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+
+  /* Cursor override for desktop */
+  a, button, input { cursor: none; }
+  @media (max-width: 600px) {
+    a, button, input { cursor: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor-blade" id="cursor"></div>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+
+  <img src="tcn-logo.png" alt="True Crime Nórdico" class="hero-logo">
+
+  <h1 class="hero-title">Crímenes<br>reales<br>del norte</h1>
+  <div class="hero-subtitle">True Crime Nórdico</div>
+  <div class="hero-line"></div>
+</section>
+
+<!-- ===== MANIFIESTO ===== -->
+<section class="manifiesto">
+  <p class="manifiesto-text" data-reveal>
+    <em>El silencio de la escena del crimen aún resuena cuando llegamos.</em><br><br>
+    Abrimos ese silencio y dejamos que hable.
+  </p>
+</section>
+
+<div class="divider">
+  <div class="divider-line"></div>
+  <div class="divider-dot"></div>
+  <div class="divider-line"></div>
+</div>
+
+<!-- ===== QUOTE ===== -->
+<section class="quote-section">
+  <p class="quote-text" data-reveal>En el norte, la oscuridad<br>llega pronto.<br>Y a veces, se queda.</p>
+</section>
+
+<div class="divider">
+  <div class="divider-line"></div>
+  <div class="divider-dot"></div>
+  <div class="divider-line"></div>
+</div>
+
+<!-- ===== CASO 001 + NEWSLETTER ===== -->
+<section class="caso-announce">
+  <div class="caso-tag" data-reveal>Próximamente</div>
+  <div class="caso-label" data-reveal>Caso 001</div>
+  <h2 class="caso-title" data-reveal>Anne-Elisabeth</h2>
+  <div class="caso-meta" data-reveal>Lørenskog, Noruega — 2018</div>
+  <p class="caso-desc" data-reveal>
+    Desapareció de su casa una tarde de octubre. 
+    Su marido era uno de los hombres más ricos de Noruega. 
+    Pidieron rescate en criptomonedas.
+  </p>
+
+  <div class="newsletter-wrapper" data-reveal>
+    <div class="newsletter-label">Suscríbete y no te pierdas el primer caso</div>
+
+    <!-- ====== WILD MAIL FORM (ActiveCampaign) ====== -->
+    <form method="POST" action="https://insatum.activehosted.com/proc.php" id="_form_1_" class="_form _form_1 _inline-form _dark" novalidate data-styles-version="5">
+      <input type="hidden" name="u" value="1" />
+      <input type="hidden" name="f" value="1" />
+      <input type="hidden" name="s" />
+      <input type="hidden" name="c" value="0" />
+      <input type="hidden" name="m" value="0" />
+      <input type="hidden" name="act" value="sub" />
+      <input type="hidden" name="v" value="2" />
+      <input type="hidden" name="or" value="2ac935c0-a258-44cf-b40b-1168bb9bb12b" />
+      <div class="_form-content">
+        <div class="_form_element _x11709406 _full_width">
+          <label for="email" class="_form-label">Email</label>
+          <div class="_field-wrapper">
+            <input type="text" id="email" name="email" placeholder="tu@email.com" required/>
+          </div>
+        </div>
+        <div class="_button-wrapper _full_width">
+          <button id="_form_1_submit" class="_submit" type="submit">Entrar</button>
+        </div>
+        <div class="_clear-element"></div>
+      </div>
+      <div class="_form-thank-you" style="display:none;"></div>
+    </form>
+    <!-- ====== END WILD MAIL FORM ====== -->
+
+    <div class="newsletter-note">Info exclusiva del caso antes que nadie. Sin spam.</div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-brand">⚔ True Crime Nórdico</div>
+  <div class="footer-tagline">En el norte, algunos silencios nunca se rompen.</div>
+</footer>
+
+<!-- ===== WILD MAIL / ACTIVECAMPAIGN SCRIPT ===== -->
+<script>
+window.cfields = [];
+window._show_thank_you = function(id, message, trackcmp_url, email) {
+  var form = document.getElementById('_form_' + id + '_'), thank_you = form.querySelector('._form-thank-you');
+  form.querySelector('._form-content').style.display = 'none';
+  thank_you.innerHTML = '<div style="padding:1rem 0;font-family:Bebas Neue,sans-serif;font-size:0.85rem;letter-spacing:0.2em;text-transform:uppercase;color:#00D4FF;">Estás dentro. El fiordo guarda lo que guarda.</div>';
+  thank_you.style.display = 'block';
+  var noteEl = document.querySelector('.newsletter-note');
+  if(noteEl) noteEl.style.display = 'none';
+  const vgoAlias = typeof visitorGlobalObjectAlias === 'undefined' ? 'vgo' : visitorGlobalObjectAlias;
+  var visitorObject = window[vgoAlias];
+  if (email && typeof visitorObject !== 'undefined') {
+    visitorObject('setEmail', email);
+    visitorObject('update');
+  } else if (typeof(trackcmp_url) != 'undefined' && trackcmp_url) {
+    _load_script(trackcmp_url);
+  }
+  if (typeof window._form_callback !== 'undefined') window._form_callback(id);
+  thank_you.setAttribute('tabindex', '-1');
+  thank_you.focus();
+};
+window._show_error = function(id, message, html) {
+  var form = document.getElementById('_form_' + id + '_'),
+      err = document.createElement('div'),
+      button = form.querySelector('button[type="submit"]'),
+      old_error = form.querySelector('._form_error');
+  if (old_error) old_error.parentNode.removeChild(old_error);
+  err.innerHTML = message;
+  err.className = '_error-inner _form_error _no_arrow';
+  var wrapper = document.createElement('div');
+  wrapper.className = '_form-inner _show_be_error';
+  wrapper.appendChild(err);
+  button.parentNode.insertBefore(wrapper, button);
+  var submitButton = form.querySelector('[id^="_form"][id$="_submit"]');
+  submitButton.disabled = false;
+  submitButton.classList.remove('processing');
+  if (html) {
+    var div = document.createElement('div');
+    div.className = '_error-html';
+    div.innerHTML = html;
+    err.appendChild(div);
+  }
+};
+window._load_script = function(url, callback, isSubmit) {
+  var head = document.querySelector('head'), script = document.createElement('script'), r = false;
+  var submitButton = document.querySelector('#_form_1_submit');
+  script.charset = 'utf-8';
+  script.src = url;
+  if (callback) {
+    script.onload = script.onreadystatechange = function() {
+      if (!r && (!this.readyState || this.readyState == 'complete')) { r = true; callback(); }
+    };
+  }
+  script.onerror = function() {
+    if (isSubmit) {
+      _show_error("1", "Error en el envío. Inténtalo de nuevo.");
+      submitButton.disabled = false;
+      submitButton.classList.remove('processing');
+    }
+  }
+  head.appendChild(script);
+};
+(function() {
+  if (window.location.search.search("excludeform") !== -1) return false;
+  var form_to_submit = document.getElementById('_form_1_');
+  var allInputs = form_to_submit.querySelectorAll('input, select, textarea'), tooltips = [], submitted = false;
+  var addEvent = function(element, event, func) {
+    if (element.addEventListener) { element.addEventListener(event, func); }
+    else { var oldFunc = element['on' + event]; element['on' + event] = function() { oldFunc.apply(this, arguments); func.apply(this, arguments); }; }
+  };
+  var remove_tooltips = function() { for (var i = 0; i < tooltips.length; i++) { tooltips[i].tip.parentNode.removeChild(tooltips[i].tip); } tooltips = []; };
+  var remove_tooltip = function(elem) { for (var i = 0; i < tooltips.length; i++) { if (tooltips[i].elem === elem) { tooltips[i].tip.parentNode.removeChild(tooltips[i].tip); tooltips.splice(i, 1); return; } } };
+  var create_tooltip = function(elem, text) {
+    var tooltip = document.createElement('div'), arrow = document.createElement('div'), inner = document.createElement('div'), new_tooltip = {};
+    tooltip.className = '_error'; arrow.className = '_error-arrow'; inner.className = '_error-inner';
+    inner.innerHTML = text; tooltip.appendChild(arrow); tooltip.appendChild(inner); elem.parentNode.appendChild(tooltip);
+    new_tooltip.tip = tooltip; new_tooltip.elem = elem; tooltips.push(new_tooltip); return new_tooltip;
+  };
+  var resize_tooltip = function(tooltip) {
+    var rect = tooltip.elem.getBoundingClientRect();
+    var scrollPosition = rect.top - window.pageYOffset;
+    tooltip.tip.className = tooltip.tip.className.replace(/ ?(_above|_below) ?/g, '') + (scrollPosition < 40 ? ' _below' : ' _above');
+  };
+  var resize_tooltips = function() { for (var i = 0; i < tooltips.length; i++) { resize_tooltip(tooltips[i]); } };
+  var validate_field = function(elem, remove) {
+    var value = elem.value, no_error = true;
+    if (remove) remove_tooltip(elem);
+    elem.className = elem.className.replace(/ ?_has_error ?/g, '');
+    if (elem.getAttribute('required') !== null && (value === undefined || value === null || value === '')) {
+      elem.className = elem.className + ' _has_error'; no_error = false;
+      create_tooltip(elem, "Campo obligatorio.");
+    }
+    if (no_error && elem.name == 'email' && !value.match(/^[\+_a-z0-9-'&=]+(\.[\+_a-z0-9-']+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i)) {
+      elem.className = elem.className + ' _has_error'; no_error = false;
+      create_tooltip(elem, "Introduce un email válido.");
+    }
+    return no_error;
+  };
+  var validate_form = function(e) {
+    remove_tooltips();
+    var no_error = true;
+    for (var i = 0; i < allInputs.length; i++) {
+      var elem = allInputs[i];
+      if (elem.getAttribute('required') !== null || (elem.name === 'email' && elem.value !== '')) {
+        if (elem.tagName.toLowerCase() !== 'select') elem.value = elem.value.trim();
+        if (!validate_field(elem)) no_error = false;
+      }
+    }
+    if (!no_error && e) e.preventDefault();
+    resize_tooltips();
+    return no_error;
+  };
+  addEvent(window, 'resize', resize_tooltips);
+  addEvent(window, 'scroll', resize_tooltips);
+
+  var _form_serialize = function(form){if(!form||form.nodeName!=="FORM"){return}var i,j,q=[];for(i=0;i<form.elements.length;i++){if(form.elements[i].name===""){continue}switch(form.elements[i].nodeName){case"INPUT":switch(form.elements[i].type){case"text":case"number":case"date":case"time":case"hidden":case"password":case"button":case"reset":case"submit":q.push(form.elements[i].name+"="+encodeURIComponent(form.elements[i].value));break;case"checkbox":case"radio":if(form.elements[i].checked){q.push(form.elements[i].name+"="+encodeURIComponent(form.elements[i].value))}break}break;case"TEXTAREA":q.push(form.elements[i].name+"="+encodeURIComponent(form.elements[i].value));break;case"SELECT":switch(form.elements[i].type){case"select-one":q.push(form.elements[i].name+"="+encodeURIComponent(form.elements[i].value));break;case"select-multiple":for(j=0;j<form.elements[i].options.length;j++){if(form.elements[i].options[j].selected){q.push(form.elements[i].name+"="+encodeURIComponent(form.elements[i].options[j].value))}}break}break}}return q.join("&")};
+
+  var form_submit = function(e) {
+    e.preventDefault();
+    if (validate_form()) {
+      var submitButton = e.target.querySelector('#_form_1_submit');
+      submitButton.disabled = true;
+      submitButton.classList.add('processing');
+      var serialized = _form_serialize(document.getElementById('_form_1_')).replace(/%0A/g, '\\n');
+      var err = form_to_submit.querySelector('._form_error');
+      if (err) err.parentNode.removeChild(err);
+      _load_script('https://insatum.activehosted.com/proc.php?' + serialized + '&jsonp=true', null, true);
+    }
+    return false;
+  };
+  addEvent(form_to_submit, 'submit', form_submit);
+})();
+</script>
+
+<!-- ===== BLOOD CURSOR + SCROLL REVEAL ===== -->
+<script>
+  const cursor = document.getElementById('cursor');
+  let lastX = 0, lastY = 0, lastDrop = 0;
+  document.addEventListener('mousemove', (e) => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+    const dx = e.clientX - lastX, dy = e.clientY - lastY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const now = Date.now();
+    if (dist > 8 && now - lastDrop > 40) { createBloodDrop(e.clientX, e.clientY, dist); lastDrop = now; }
+    lastX = e.clientX; lastY = e.clientY;
+  });
+  function createBloodDrop(x, y, speed) {
+    const drop = document.createElement('div');
+    drop.className = 'blood-drop';
+    const size = Math.min(3 + speed * 0.08, 8);
+    drop.style.width = size + 'px'; drop.style.height = size + 'px';
+    drop.style.left = (x + (Math.random() - 0.5) * 6) + 'px';
+    drop.style.top = (y + (Math.random() - 0.5) * 4) + 'px';
+    document.body.appendChild(drop);
+    if (Math.random() < 0.3 && speed > 15) {
+      for (let i = 0; i < 2; i++) {
+        const s = document.createElement('div'); s.className = 'blood-drop';
+        const ss = size * 0.4; s.style.width = ss + 'px'; s.style.height = ss + 'px';
+        s.style.left = (x + (Math.random() - 0.5) * 20) + 'px';
+        s.style.top = (y + (Math.random() - 0.5) * 20) + 'px';
+        s.style.animationDuration = '1.5s'; document.body.appendChild(s);
+        setTimeout(() => s.remove(), 1500);
+      }
+    }
+    setTimeout(() => drop.remove(), 2500);
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
