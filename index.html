@@ -348,7 +348,8 @@
   }
 
   /* Style the email field */
-  #_form_1_ input[type="text"] {
+  #_form_1_ input[type="text"],
+  #_form_1_ input[type="email"] {
     background: rgba(74, 90, 106, 0.1) !important;
     border: 1px solid rgba(74, 90, 106, 0.2) !important;
     border-right: none !important;
@@ -364,11 +365,13 @@
     cursor: none !important;
   }
 
-  #_form_1_ input[type="text"]::placeholder {
+  #_form_1_ input[type="text"]::placeholder,
+  #_form_1_ input[type="email"]::placeholder {
     color: rgba(74, 90, 106, 0.6) !important;
   }
 
-  #_form_1_ input[type="text"]:focus {
+  #_form_1_ input[type="text"]:focus,
+  #_form_1_ input[type="email"]:focus {
     border-color: var(--cyan) !important;
   }
 
@@ -431,7 +434,8 @@
     border-radius: 0 !important;
   }
 
-  #_form_1_ input[type="text"]._has_error {
+  #_form_1_ input[type="text"]._has_error,
+  #_form_1_ input[type="email"]._has_error {
     border-color: var(--rojo) !important;
   }
 
@@ -450,7 +454,8 @@
       float: none !important;
       width: 100% !important;
     }
-    #_form_1_ input[type="text"] {
+    #_form_1_ input[type="text"],
+    #_form_1_ input[type="email"] {
       border-right: 1px solid rgba(74, 90, 106, 0.2) !important;
       border-bottom: none !important;
     }
@@ -563,30 +568,9 @@
   <div class="newsletter-wrapper" data-reveal>
     <div class="newsletter-label">Suscríbete y no te pierdas el primer caso</div>
 
-    <!-- ====== WILD MAIL FORM (ActiveCampaign) ====== -->
-    <form method="POST" action="https://insatum.activehosted.com/proc.php" id="_form_1_" class="_form _form_1 _inline-form _dark" novalidate data-styles-version="5">
-      <input type="hidden" name="u" value="1" />
-      <input type="hidden" name="f" value="1" />
-      <input type="hidden" name="s" />
-      <input type="hidden" name="c" value="0" />
-      <input type="hidden" name="m" value="0" />
-      <input type="hidden" name="act" value="sub" />
-      <input type="hidden" name="v" value="2" />
-      <input type="hidden" name="or" value="2ac935c0-a258-44cf-b40b-1168bb9bb12b" />
-      <div class="_form-content">
-        <div class="_form_element _x11709406 _full_width">
-          <label for="email" class="_form-label">Email</label>
-          <div class="_field-wrapper">
-            <input type="text" id="email" name="email" placeholder="tu@email.com" required/>
-          </div>
-        </div>
-        <div class="_button-wrapper _full_width">
-          <button id="_form_1_submit" class="_submit" type="submit">Entrar</button>
-        </div>
-        <div class="_clear-element"></div>
-      </div>
-      <div class="_form-thank-you" style="display:none;"></div>
-    </form>
+    <!-- ====== WILD MAIL FORM (ActiveCampaign Embed) ====== -->
+    <div class="_form_1"></div>
+    <script src="https://insatum.activehosted.com/f/embed.php?id=1" charset="utf-8"></script>
     <!-- ====== END WILD MAIL FORM ====== -->
 
     <div class="newsletter-note">Info exclusiva del caso antes que nadie. Sin spam.</div>
@@ -598,141 +582,6 @@
   <div class="footer-brand">⚔ True Crime Nórdico</div>
   <div class="footer-tagline">En el norte, algunos silencios nunca se rompen.</div>
 </footer>
-
-<!-- ===== WILD MAIL / ACTIVECAMPAIGN SCRIPT ===== -->
-<script>
-window.cfields = [];
-window._show_thank_you = function(id, message, trackcmp_url, email) {
-  var form = document.getElementById('_form_' + id + '_'), thank_you = form.querySelector('._form-thank-you');
-  form.querySelector('._form-content').style.display = 'none';
-  thank_you.innerHTML = '<div style="padding:1rem 0;font-family:Bebas Neue,sans-serif;font-size:0.85rem;letter-spacing:0.2em;text-transform:uppercase;color:#00D4FF;">Estás dentro. El fiordo guarda lo que guarda.</div>';
-  thank_you.style.display = 'block';
-  var noteEl = document.querySelector('.newsletter-note');
-  if(noteEl) noteEl.style.display = 'none';
-  const vgoAlias = typeof visitorGlobalObjectAlias === 'undefined' ? 'vgo' : visitorGlobalObjectAlias;
-  var visitorObject = window[vgoAlias];
-  if (email && typeof visitorObject !== 'undefined') {
-    visitorObject('setEmail', email);
-    visitorObject('update');
-  } else if (typeof(trackcmp_url) != 'undefined' && trackcmp_url) {
-    _load_script(trackcmp_url);
-  }
-  if (typeof window._form_callback !== 'undefined') window._form_callback(id);
-  thank_you.setAttribute('tabindex', '-1');
-  thank_you.focus();
-};
-window._show_error = function(id, message, html) {
-  var form = document.getElementById('_form_' + id + '_'),
-      err = document.createElement('div'),
-      button = form.querySelector('button[type="submit"]'),
-      old_error = form.querySelector('._form_error');
-  if (old_error) old_error.parentNode.removeChild(old_error);
-  err.innerHTML = message;
-  err.className = '_error-inner _form_error _no_arrow';
-  var wrapper = document.createElement('div');
-  wrapper.className = '_form-inner _show_be_error';
-  wrapper.appendChild(err);
-  button.parentNode.insertBefore(wrapper, button);
-  var submitButton = form.querySelector('[id^="_form"][id$="_submit"]');
-  submitButton.disabled = false;
-  submitButton.classList.remove('processing');
-  if (html) {
-    var div = document.createElement('div');
-    div.className = '_error-html';
-    div.innerHTML = html;
-    err.appendChild(div);
-  }
-};
-window._load_script = function(url, callback, isSubmit) {
-  var head = document.querySelector('head'), script = document.createElement('script'), r = false;
-  var submitButton = document.querySelector('#_form_1_submit');
-  script.charset = 'utf-8';
-  script.src = url;
-  if (callback) {
-    script.onload = script.onreadystatechange = function() {
-      if (!r && (!this.readyState || this.readyState == 'complete')) { r = true; callback(); }
-    };
-  }
-  script.onerror = function() {
-    if (isSubmit) {
-      _show_error("1", "Error en el envío. Inténtalo de nuevo.");
-      submitButton.disabled = false;
-      submitButton.classList.remove('processing');
-    }
-  }
-  head.appendChild(script);
-};
-(function() {
-  if (window.location.search.search("excludeform") !== -1) return false;
-  var form_to_submit = document.getElementById('_form_1_');
-  var allInputs = form_to_submit.querySelectorAll('input, select, textarea'), tooltips = [], submitted = false;
-  var addEvent = function(element, event, func) {
-    if (element.addEventListener) { element.addEventListener(event, func); }
-    else { var oldFunc = element['on' + event]; element['on' + event] = function() { oldFunc.apply(this, arguments); func.apply(this, arguments); }; }
-  };
-  var remove_tooltips = function() { for (var i = 0; i < tooltips.length; i++) { tooltips[i].tip.parentNode.removeChild(tooltips[i].tip); } tooltips = []; };
-  var remove_tooltip = function(elem) { for (var i = 0; i < tooltips.length; i++) { if (tooltips[i].elem === elem) { tooltips[i].tip.parentNode.removeChild(tooltips[i].tip); tooltips.splice(i, 1); return; } } };
-  var create_tooltip = function(elem, text) {
-    var tooltip = document.createElement('div'), arrow = document.createElement('div'), inner = document.createElement('div'), new_tooltip = {};
-    tooltip.className = '_error'; arrow.className = '_error-arrow'; inner.className = '_error-inner';
-    inner.innerHTML = text; tooltip.appendChild(arrow); tooltip.appendChild(inner); elem.parentNode.appendChild(tooltip);
-    new_tooltip.tip = tooltip; new_tooltip.elem = elem; tooltips.push(new_tooltip); return new_tooltip;
-  };
-  var resize_tooltip = function(tooltip) {
-    var rect = tooltip.elem.getBoundingClientRect();
-    var scrollPosition = rect.top - window.pageYOffset;
-    tooltip.tip.className = tooltip.tip.className.replace(/ ?(_above|_below) ?/g, '') + (scrollPosition < 40 ? ' _below' : ' _above');
-  };
-  var resize_tooltips = function() { for (var i = 0; i < tooltips.length; i++) { resize_tooltip(tooltips[i]); } };
-  var validate_field = function(elem, remove) {
-    var value = elem.value, no_error = true;
-    if (remove) remove_tooltip(elem);
-    elem.className = elem.className.replace(/ ?_has_error ?/g, '');
-    if (elem.getAttribute('required') !== null && (value === undefined || value === null || value === '')) {
-      elem.className = elem.className + ' _has_error'; no_error = false;
-      create_tooltip(elem, "Campo obligatorio.");
-    }
-    if (no_error && elem.name == 'email' && !value.match(/^[\+_a-z0-9-'&=]+(\.[\+_a-z0-9-']+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i)) {
-      elem.className = elem.className + ' _has_error'; no_error = false;
-      create_tooltip(elem, "Introduce un email válido.");
-    }
-    return no_error;
-  };
-  var validate_form = function(e) {
-    remove_tooltips();
-    var no_error = true;
-    for (var i = 0; i < allInputs.length; i++) {
-      var elem = allInputs[i];
-      if (elem.getAttribute('required') !== null || (elem.name === 'email' && elem.value !== '')) {
-        if (elem.tagName.toLowerCase() !== 'select') elem.value = elem.value.trim();
-        if (!validate_field(elem)) no_error = false;
-      }
-    }
-    if (!no_error && e) e.preventDefault();
-    resize_tooltips();
-    return no_error;
-  };
-  addEvent(window, 'resize', resize_tooltips);
-  addEvent(window, 'scroll', resize_tooltips);
-
-  var _form_serialize = function(form){if(!form||form.nodeName!=="FORM"){return}var i,j,q=[];for(i=0;i<form.elements.length;i++){if(form.elements[i].name===""){continue}switch(form.elements[i].nodeName){case"INPUT":switch(form.elements[i].type){case"text":case"number":case"date":case"time":case"hidden":case"password":case"button":case"reset":case"submit":q.push(form.elements[i].name+"="+encodeURIComponent(form.elements[i].value));break;case"checkbox":case"radio":if(form.elements[i].checked){q.push(form.elements[i].name+"="+encodeURIComponent(form.elements[i].value))}break}break;case"TEXTAREA":q.push(form.elements[i].name+"="+encodeURIComponent(form.elements[i].value));break;case"SELECT":switch(form.elements[i].type){case"select-one":q.push(form.elements[i].name+"="+encodeURIComponent(form.elements[i].value));break;case"select-multiple":for(j=0;j<form.elements[i].options.length;j++){if(form.elements[i].options[j].selected){q.push(form.elements[i].name+"="+encodeURIComponent(form.elements[i].options[j].value))}}break}break}}return q.join("&")};
-
-  var form_submit = function(e) {
-    e.preventDefault();
-    if (validate_form()) {
-      var submitButton = e.target.querySelector('#_form_1_submit');
-      submitButton.disabled = true;
-      submitButton.classList.add('processing');
-      var serialized = _form_serialize(document.getElementById('_form_1_')).replace(/%0A/g, '\\n');
-      var err = form_to_submit.querySelector('._form_error');
-      if (err) err.parentNode.removeChild(err);
-      _load_script('https://insatum.activehosted.com/proc.php?' + serialized + '&jsonp=true', null, true);
-    }
-    return false;
-  };
-  addEvent(form_to_submit, 'submit', form_submit);
-})();
-</script>
 
 <!-- ===== BLOOD CURSOR + SCROLL REVEAL ===== -->
 <script>
